@@ -9,7 +9,7 @@ class Movie
     @id = options['id'].to_i if options['id']
     @title = options['title']
     @genre = options['genre']
-    @rating = optiosn['rating']
+    @rating = options['rating']
   end
 
   def save()
@@ -21,6 +21,33 @@ class Movie
     values = [@title, @genre, @rating]
     movie = SqlRunner.run( sql, values ).first
     @id = movie['id'].to_i
+  end
+
+  def delete()
+    sql = "DELETE FROM movies WHERE id = $1"
+    values = [@id]
+    SqlRunner.run(sql, values)
+  end
+
+  def update()
+    sql = "UPDATE movies SET (title, genre, rating) = ($1, $2, $3) WHERE id = $4"
+    values = [@title, @genre, @rating, @id]
+    SqlRunner.run(sql, values)
+  end
+
+  def self.delete_all()
+    sql = "DELETE FROM movies"
+    SqlRunner.run(sql)
+  end
+
+  def self.select_all()
+    sql = "SELECT * FROM movies"
+    results = SqlRunner.run(sql)
+    self.map_all(results, self)
+  end
+
+  def self.map_all(results, class_)
+    results.map{|result_hash| class_.new(result_hash)}
   end
 
 end

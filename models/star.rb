@@ -21,5 +21,30 @@ class Star
     @id = star['id'].to_i
   end
 
+  def delete()
+    sql = "DELETE FROM stars WHERE id = $1"
+    values = [@id]
+    SqlRunner.run(sql, values)
+  end
 
+  def update()
+    sql = "UPDATE stars SET (first_name, last_name) = ($1, $2) WHERE id = $3"
+    values = [@first_name, @last_name, @id]
+    SqlRunner.run(sql, values)
+  end
+
+  def self.delete_all()
+    sql = "DELETE FROM stars"
+    SqlRunner.run(sql)
+  end
+
+  def self.select_all()
+    sql = "SELECT * FROM stars"
+    results = SqlRunner.run(sql)
+    self.map_all(results, self)
+  end
+
+  def self.map_all(results, class_)
+    results.map{|result_hash| class_.new(result_hash)}
+  end
 end
